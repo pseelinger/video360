@@ -224,27 +224,13 @@ three.js r65 or higher
                 });
 
                 // Progress Meter
-                this._video.addEventListener("progress", function() {
-                    var percent = null;
-                        if (self._video && self._video.buffered && self._video.buffered.length > 0 && self._video.buffered.end && self._video.duration) {
-                            percent = self._video.buffered.end(0) / self._video.duration;
-                        }
-                        // Some browsers (e.g., FF3.6 and Safari 5) cannot calculate target.bufferered.end()
-                        // to be anything other than 0. If the byte count is available we use this instead.
-                        // Browsers that support the else if do not seem to have the bufferedBytes value and
-                        // should skip to there. Tested in Safari 5, Webkit head, FF3.6, Chrome 6, IE 7/8.
-                        else if (self._video && self._video.bytesTotal !== undefined && self._video.bytesTotal > 0 && self._video.bufferedBytes !== undefined) {
-                            percent = self._video.bufferedBytes / self._video.bytesTotal;
-                        }
-
-                        // Someday we can have a loading animation for videos
-                        var cpct = Math.round(percent * 100);
-                        if(cpct === 100) {
-                            // do something now that we are done
-                        } else {
-                            // do something with this percentage info (cpct)
-                        }
-                });
+                this._video.addEventListener("timeupdate", function() {
+                    var progressBar = document.getElementById('progress-bar');
+                    var percentage = Math.floor((100 / self._video.duration) *
+                    self._video.currentTime);
+                    progressBar.value = percentage;
+                    progressBar.innerHTML = percentage + '% played';
+                    });
 
                 // Video Play Listener, fires after video loads
                 this._video.addEventListener("canplaythrough", function() {
@@ -283,6 +269,7 @@ three.js r65 or higher
                 <div class="controls"> \
                     <a href="#" class="playButton button fa '+ playPauseControl +'"></a> \
                     <a href="#" class="muteButton button fa '+ muteControl +'"></a> \
+                    <progress id="progress-bar" min="0" max="100" value="0">0:00</progress> \
                     <a href="#" class="fullscreenButton button fa fa-expand"></a> \
                 </div> \
             ';
